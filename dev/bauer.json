@@ -1,0 +1,14 @@
+{
+    "watch": [
+        "static"
+    ],
+    
+    "search": [ 
+        "./libs",
+        "../amp"
+    ],
+    
+    "ignore":     [],
+    "monitor":    true,
+    "createDirs": true
+}

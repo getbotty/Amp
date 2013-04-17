@@ -1,0 +1,122 @@
+/** Amp Datepicker Styles **/
+
+input.amp.amp-date {
+  text-align: center;
+  background-image:     url('images/datepicker.png');
+  background-position:  right center;
+  background-repeat:    no-repeat;
+  
+  &.active {
+    background-image:   none;
+    border-color:       #B3D4FD;
+    outline:            solid 1px #B3D4FD;
+  }
+  
+  &[disabled] {
+    cursor:           default;
+    background-color: #eee;
+    color:            #aaa;
+    border-color:     #eee;
+  }
+}
+
+div.amp-dpdiv {
+  position:         absolute;
+  visibility:       hidden;
+  background-color: #fff;
+  z-index:          10002;
+  border:           solid 2px #B3D4FD;
+  padding:          0 5px;
+  line-height:      1.5;
+
+  &.shown {
+    visibility: visible;
+  }
+  
+  div.amp-dpdiv-border-cover {
+    background-color: #fff;
+    position:         absolute;
+    width:            0;
+    height:           4px;
+  }
+  
+  &.below {
+    .box-shadow(0 2px 4px rgba(0,0,0,0.2));
+    div.amp-dpdiv-border-cover {
+      top: -4px;
+    }
+  }
+
+  &.above {
+    div.amp-dpdiv-border-cover {
+      bottom: -4px;
+    }
+  }
+
+  div.amp-dpheader {
+    margin:     5px 0 2px;
+    min-height: 20px;
+    text-align: center;
+    
+    button {
+      min-width: 70px;
+
+      &.active, &:focus {
+        outline: none;
+      }
+      
+      &:last-child {
+        margin: none;
+      }
+    }
+    
+    a {
+      position:    relative;
+      cursor:      pointer;
+      display:     inline-block;
+      width:       16px;
+      height:      16px;
+      margin:      0;
+      padding:     0;
+      line-height: 0;
+      top:         3px;
+      
+      &.amp-prev-month { background-image: url('images/month-back.png'); }
+      &.amp-next-month { background-image: url('images/month-fwd.png'); }
+    }
+    
+  }
+
+  div.amp-dpbody {
+    padding: 0 5px 5px;
+    
+    table {
+      width: 100%;
+      margin: auto;
+      td, th {
+        text-align: center;
+        padding: 1px 4px;
+      }
+      td {
+        cursor: pointer;
+        border-left: solid 1px #ddd;
+        &:first-child {
+          border-left: none;
+        }
+      }
+      td.disabled {
+        cursor: default;
+        color: #ccc;
+      }
+      td.empty {
+        cursor: default;
+      }
+      td.active {
+        background-color: #0064cd;
+        border-color: #0064cd;
+        color: #fff;
+      }
+    }
+  }
+
+}

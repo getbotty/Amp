@@ -1,0 +1,15 @@
+[{
+    "output":   "./lib",
+    "ignore":   [ "jquery = 1.9.1" ],
+    "include":  [ "amp.grid >= 1.0.0" ],
+
+    "minify_js":  false,
+    "minify_css": true
+},{
+    "output":   "./jquery.js",
+    "ignore":   [  ],
+    "include":  [ "jquery = 1.9.1" ],
+
+    "minify_js":  false,
+    "minify_css": true 
+}]

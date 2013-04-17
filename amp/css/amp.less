@@ -1,0 +1,816 @@
+/* Default styles for Amp controls.
+ * Borrows from twitter bootstrap css.
+ * --------------------------------------------------------------- */
+
+// CSS3 MIXINS and Variables (taken from bootstrap)
+.clearfix() { *zoom: 1; &:before, &:after { display: table; content: ""; } &:after { clear: both; }}
+.ie7-restore-left-whitespace() { *margin-left: .3em;&:first-child { *margin-left: 0; }}
+.ie7-restore-right-whitespace() { *margin-right: .3em; &:last-child { *margin-left: 0; }}
+.border-radius(@radius: 5px){ -webkit-border-radius: @radius;-moz-border-radius: @radius;border-radius: @radius;}
+.box-shadow(@shadow: 0 1px 3px rgba(0,0,0,.25)){-webkit-box-shadow: @shadow;-moz-box-shadow: @shadow;box-shadow: @shadow;}
+.transition(@transition) {-webkit-transition: @transition;-moz-transition: @transition;-ms-transition: @transition;-o-transition: @transition;transition: @transition;}
+.background-clip(@clip) {-webkit-background-clip: @clip;-moz-background-clip: @clip;background-clip: @clip;}
+.opacity(@opacity: 100) { opacity: @opacity / 100; filter: e(%("alpha(opacity=%d)", @opacity));}
+.gradientBar(@primaryColor, @secondaryColor) { #gradient > .vertical(@primaryColor, @secondaryColor);
+   border-color: @secondaryColor @secondaryColor darken(@secondaryColor, 15%); border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
+}
+#gradient {
+.vertical(@startColor: #555, @endColor: #333) {
+  background-color: mix(@startColor, @endColor, 60%);
+  background-image: -moz-linear-gradient(top, @startColor, @endColor); // FF 3.6+
+  background-image: -ms-linear-gradient(top, @startColor, @endColor); // IE10
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(@startColor), to(@endColor)); // Safari 4+, Chrome 2+
+  background-image: -webkit-linear-gradient(top, @startColor, @endColor); // Safari 5.1+, Chrome 10+
+  background-image: -o-linear-gradient(top, @startColor, @endColor); // Opera 11.10
+  background-image: linear-gradient(top, @startColor, @endColor); // The standard
+  background-repeat: repeat-x;
+  filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",@startColor,@endColor)); // IE9 and down
+}
+.vertical-three-colors(@startColor: #00b3ee, @midColor: #7a43b6, @colorStop: 50%, @endColor: #c3325f) {
+  background-color: mix(@midColor, @endColor, 80%);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(@startColor), color-stop(@colorStop, @midColor), to(@endColor));
+  background-image: -webkit-linear-gradient(@startColor, @midColor @colorStop, @endColor);
+  background-image: -moz-linear-gradient(top, @startColor, @midColor @colorStop, @endColor);
+  background-image: -ms-linear-gradient(@startColor, @midColor @colorStop, @endColor);
+  background-image: -o-linear-gradient(@startColor, @midColor @colorStop, @endColor);
+  background-image: linear-gradient(@startColor, @midColor @colorStop, @endColor);
+  background-repeat: no-repeat;
+  filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",@startColor,@endColor)); // IE9 and down, gets no color-stop at all for proper fallback
+}}
+.buttonBackground(@startColor, @endColor) { 
+  .gradientBar(@startColor, @endColor); 
+  filter: e(%("progid:DXImageTransform.Microsoft.gradient(enabled = false)"));
+  &:hover, &:active, &.active, &.disabled, &[disabled] { background-color: @endColor; } 
+  &:active, &.active { background-color: darken(@endColor, 10%) e("\9"); }
+}
+
+@import "icons.less";
+@import "theme.less";
+
+/**
+ * Input and Textarea styles
+**/
+
+input.amp, textarea.amp {
+  // TODO: See which browsers support box-sizing and remove height there. Otherwise, add it.
+  height: @baseLineHeight;
+  //   box-sizing: border-box;
+  // -moz-box-sizing: border-box;
+
+  display:     inline-block;
+  padding:     4px;
+  font-size:   @baseFontSize;
+  line-height: @baseLineHeight;
+  color:       @grayDark;
+  border:      @elementBorder;
+
+  .border-radius(@elementBorderRadius);
+  .transition(.03s linear all);
+
+  &:focus{
+    outline:      none;
+    border: @focusedElementBorder;
+   .box-shadow(@focusedElementShadow);
+  }
+  
+  &[disabled] {
+    cursor: default;
+    .opacity(65);
+  }
+  
+  &.amp-number { 
+    text-align: right; 
+  }
+  
+  &.amp-date {
+    text-align: center;
+    background: @datepickerBackground;
+  }
+  
+  &.amp-combo {
+    background: @comboBackground;
+    padding-right: 20px;
+    &.amp-loading {
+      background: @comboBackgroundLoading;
+    }
+  }
+}
+
+.amp-select {
+  position:       relative;
+  padding-left:   0;
+  padding-right:  0;
+  text-align:     left;
+
+  div {
+    .box-shadow(none);
+    
+    /* The div containing the up-down arrows icon */
+    &.i {
+      position:   absolute;
+      right:      0; 
+      top:        0; 
+      bottom:     0;
+      width:      20px;
+      background: @selectBackground;
+    }
+  
+    /* The div containing the label */
+    &.l {
+      margin:        0 15px 0 0;
+      overflow:      hidden;
+      text-overflow: ellipsis;
+      white-space:   nowrap;
+      text-align:    left;
+    }
+  }
+}
+
+/* Fixes a display bug in firefox */
+@-moz-document url-prefix() {
+  button.amp-select div.i { top: -5px; bottom: -6px; }
+}
+
+input::-webkit-input-placeholder { color: @placeholderTextColor; }
+input:-moz-placeholder { color: @placeholderTextColor; }
+
+.amp.btn:not(input) {
+  display:      inline-block;
+  position:     relative;  
+  padding:      4px 10px 4px;
+  text-align:   center;
+  
+  font-size:    @baseFontSize;
+  line-height:  @baseLineHeight;
+  color:        @grayDark;
+  text-shadow:  @buttonTextShadow;
+  border:       @elementBorder;
+
+  .border-radius(@elementBorderRadius);
+  .transition(.03s linear all);
+
+  #gradient > .vertical-three-colors(@buttonGradientStart, @buttonGradientMiddle, @buttonGradientColorStop, @buttonGradientEnd);
+  
+  &:hover {
+    // Stops bootstrap from overriding this
+    background-position: 0% 0%;
+  }
+  
+  &:focus {
+    outline:  none;
+    border:   @focusedElementBorder;
+    .box-shadow(@focusedElementShadow);
+  }
+
+  &.active {
+    filter: none;
+
+    @shadow: @buttonActiveShadow1, @buttonActiveShadow2; 
+    .box-shadow(@shadow);
+
+    &:focus {
+      border:  @focusedElementBorder;
+      @shadow: @buttonActiveShadow1, @buttonActiveShadow2, @focusedElementShadow;
+      .box-shadow(@shadow);
+    }
+  }
+
+  &[disabled] {
+    cursor: default;
+    background-image: none;
+    .opacity(80);
+  }
+
+  &.btn-primary { .buttonBackground(@linkColor, spin(@linkColor, 20)); }
+  &.btn-warning { .buttonBackground(lighten(@orange, 15%), @orange); }
+  &.btn-danger  { .buttonBackground(#ee5f5b, #bd362f); }
+  &.btn-success { .buttonBackground(#62c462, #51a351); }
+  &.btn-info    { .buttonBackground(#5bc0de, #2f96b4); }  
+  &.btn-primary, &.btn-warning, &.btn-danger, &.btn-success, &.btn-info {
+    text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+    color: @white
+  }
+}
+
+a.amp.btn {
+  text-decoration: none;
+}
+
+/**
+ * Button groups. taken from twitter bootstrap.
+**/
+
+.btn-group {
+  position: relative;
+  .clearfix();
+  .ie7-restore-left-whitespace();
+
+  .btn {
+    position: relative;
+    float: left;
+    margin-left: -1px;
+    .border-radius(0);
+  }
+  
+  .btn:first-child {
+    margin-left: 0;
+       -webkit-border-top-left-radius: @elementBorderRadius;
+           -moz-border-radius-topleft: @elementBorderRadius;
+               border-top-left-radius: @elementBorderRadius;
+    -webkit-border-bottom-left-radius: @elementBorderRadius;
+        -moz-border-radius-bottomleft: @elementBorderRadius;
+            border-bottom-left-radius: @elementBorderRadius;
+  }
+
+  .btn:last-child, .dropdown-toggle {
+       -webkit-border-top-right-radius: @elementBorderRadius;
+           -moz-border-radius-topright: @elementBorderRadius;
+               border-top-right-radius: @elementBorderRadius;
+    -webkit-border-bottom-right-radius: @elementBorderRadius;
+        -moz-border-radius-bottomright: @elementBorderRadius;
+            border-bottom-right-radius: @elementBorderRadius;
+  }
+  
+  .btn:hover, .btn:focus, .btn:active, .btn.active { 
+    z-index: 2; 
+  }
+}
+.btn-group + .btn-group {
+  margin-left: 5px;
+}
+
+
+/**
+ * Lists' Styles
+**/
+div.amp-list {
+  overflow-y: auto;
+  overflow-x: hidden;
+  position:   relative;
+  border:     none;
+  .border-radius(@elementBorderRadius);
+  -webkit-background-clip: padding-box;
+
+  &:focus, &.focused {
+    outline: none;
+    .box-shadow(@focusedElementShadow);
+  }
+
+  ul{
+    .border-radius(@elementBorderRadius);
+    border:     none;
+    list-style: none;
+    margin:     0;
+    padding:    0;
+    background: @listBackground;
+    display:    block;
+
+    li{
+      margin:        0;      
+      padding:       3px 20px;
+      white-space:   nowrap;
+      cursor:        pointer;
+      font-size:     @baseFontSize;
+      border-bottom: @listBorder;
+
+      &.focused {
+        background: @focusedListBackground;
+        color:      @focusedListColor;
+        &.active {
+          background: @focusedActiveListBackground;
+        }
+      }
+
+      &.active {
+        background: @activeListBackground;
+      }      
+    }
+  } 
+}
+
+div.amp-panel {
+  z-index:    99999;
+  position:   absolute;
+  background: @listBackground;
+  .box-shadow( @listPanelShadow );
+
+  visibility: hidden;
+  &.shown { visibility: visible; }
+}
+
+
+div.amp-tags {
+  position: relative;
+  padding:  3px;
+  border:   @elementBorder;
+  
+  .clearfix();
+  .border-radius(@elementBorderRadius);
+  
+  input, button {
+    position: relative;
+    width:    100%;
+  }
+  
+  span.amp-tag {
+    position: relative;
+    display:  block;
+    float:    left;
+    padding:  3px 20px 3px 5px;
+    margin:   3px 3px 1px 0;
+    cursor:   default;
+    color:    @textColor;
+    border:   @elementBorder;
+    .border-radius(@elementBorderRadius);
+
+    a {
+      position:    absolute;
+      color:       @textColor;
+      display:     block;
+      right:       0.15em;
+      top:         0.2em;
+      width:       12px;
+      height:      13px;
+      font-size:   15px;
+      font-weight: bold;
+      line-height: 12px;
+      cursor:      pointer;
+      &:focus {
+        color: @focusedElementBorderColor;
+        text-shadow: 0 0 3px darken(@focusedElementBorderColor, 20%);
+        outline: none;
+        border: none;
+        .box-shadow(none);
+      }
+    }
+  }
+}
+
+/**
+ * Modal Styles
+**/
+.modal-backdrop{
+  position:   fixed;
+  top:        0; 
+  left:       0; 
+  right:      0; 
+  bottom:     0;
+  z-index:    10000;
+  background: #000;
+  background: rgba(0,0,0,0.85);
+}
+
+div.amp-modal {
+  visibility: hidden;
+  .opacity(0);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 10001;
+  overflow: hidden;
+  min-width: 560px;
+  margin: -250px 0 0 -280px;
+  background-color: @white;
+  border: 1px solid #999;
+  border: 1px solid rgba(0,0,0,.3);
+  *border: 1px solid #999; /* IE6-7 */
+  .border-radius(6px);
+  .box-shadow(0 3px 7px rgba(0,0,0,0.3));
+  .background-clip(padding-box);
+    
+  &.shown {
+    visibility: visible;
+    .opacity(100);
+    top: 50%;
+  }
+
+  .modal-header {
+    padding: 9px 15px;
+    border-bottom: 1px solid #eee;
+    .close { 
+      margin-top: 2px; 
+      float: right;
+      font-size: 20px;
+      font-weight: bold;
+      line-height: @baseLineHeight;
+      color: @black;
+      text-shadow: 0 1px 0 rgba(255,255,255,1);
+      text-decoration: none;
+      .opacity(20);
+      &:hover {
+        color: @black;
+        text-decoration: none;
+        .opacity(40);
+        cursor: pointer;
+      }
+    }
+  }
+  .modal-body { padding: 15px; }
+  .modal-footer {
+    padding: 14px 15px 15px;
+    margin-bottom: 0;
+    background-color: #f5f5f5;
+    border-top: 1px solid #ddd;
+    .border-radius(0 0 6px 6px);
+    .box-shadow(inset 0 1px 0 @white);
+    .clearfix();
+    .btn {
+      float: right;
+      margin-left: 5px;
+      margin-bottom: 0; // account for input[type="submit"] which gets the bottom margin like all other inputs
+    }
+  }
+}
+
+/**
+ * Tooltip Styles
+**/
+
+// Fix the stacking of these components when in modals
+.modal .amp-tooltip {
+  z-index: 12000;
+}
+
+#amp-tooltip-arrow {
+  .above(@arrowWidth: 5px) {
+    bottom: 0;
+    left: 50%;
+    margin-left: -@arrowWidth;
+    border-left: @arrowWidth solid transparent;
+    border-right: @arrowWidth solid transparent;
+    border-top: @arrowWidth solid darken(red, 10%);
+  }
+  .left(@arrowWidth: 5px) {
+    top: 50%;
+    right: 0;
+    margin-top: -@arrowWidth;
+    border-top: @arrowWidth solid transparent;
+    border-bottom: @arrowWidth solid transparent;
+    border-left: @arrowWidth solid darken(red, 10%);
+  }
+  .below(@arrowWidth: 5px) {
+    top: 0;
+    left: 50%;
+    margin-left: -@arrowWidth;
+    border-left: @arrowWidth solid transparent;
+    border-right: @arrowWidth solid transparent;
+    border-bottom: @arrowWidth solid darken(red, 10%);
+  }
+  .right(@arrowWidth: 5px) {
+    top: 50%;
+    left: 0;
+    margin-top: -@arrowWidth;
+    border-top: @arrowWidth solid transparent;
+    border-bottom: @arrowWidth solid transparent;
+    border-right: @arrowWidth solid darken(red, 10%);
+  }
+}
+
+.amp-tooltip {
+  display: block;
+  position: absolute;
+  visibility: visible;
+  padding: 5px;
+  font-size: 11px;
+  z-index: 1000;
+  
+  .opacity(100);
+  .transition(opacity .15s ease-in-out);
+  
+  &.hidden {
+    .transition(opacity 0.15s ease-in-out);
+    .opacity(0); 
+    visibility: hidden;
+  }
+    
+  &.above .amp-tooltip-arrow   { #amp-tooltip-arrow > .above(); }
+  &.left  .amp-tooltip-arrow   { #amp-tooltip-arrow > .left();  }
+  &.below .amp-tooltip-arrow   { #amp-tooltip-arrow > .below(); }
+  &.right .amp-tooltip-arrow   { #amp-tooltip-arrow > .right(); }
+}
+
+.amp-tooltip-inner {
+  border: solid 1px darken(red, 10%);
+  padding: 3px 8px;
+  background-color: red;
+  color: white;
+  text-align: center;
+  max-width: 350px;
+  text-decoration: none;
+  .border-radius(3px);
+  font-size: 11px;
+}
+
+.amp-tooltip-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+
+/*
+ * jQuery UI CSS Framework 1.8.13 and Datepicker
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Theming/API
+ */
+.ui-helper-clearfix, .clearfix { 
+  display:block;
+  &:after { 
+    content:    "."; 
+    display:    block; 
+    height:     0; 
+    clear:      both; 
+    visibility: hidden; 
+  }
+}
+* html .ui-helper-clearfix { 
+  height:1%; 
+}
+.ui-state-disabled { 
+  cursor: default !important;
+  .opacity(40);
+}
+.ui-state-default {
+  border: 1px solid #aed0ea; 
+  background: #d7ebf9; 
+  font-weight: bold; 
+  color: #2779aa;
+  a, a:link, a:visited { 
+    color: #2779aa; 
+    text-decoration: none; 
+  }
+}
+.ui-state-active {
+  border: 1px solid #2694e8; 
+  background: #3baae3; 
+  font-weight: bold; color: #ffffff;
+  color: #ffffff;
+  a, a:hover { 
+    color: #ffffff;
+    text-decoration: none;
+  }
+}
+
+#ui-datepicker-div { 
+  .border-radius(2px);
+  .box-shadow(0 0 20px 0px #666); 
+  .transition(opacity 0.15s ease-in-out);
+  
+  z-index: 3 !important;
+  visibility: visible;
+  .opacity(100); 
+  background: #f2f5f7; 
+  border: 1px solid #dddddd; 
+  color: #666666; 
+
+  &.hidden {
+    .transition(opacity 0.15s ease-in-out);
+    .opacity(0); 
+    visibility: hidden;
+  }  
+}
+
+.ui-datepicker { 
+  width: 17em; 
+  padding: .2em .2em 0; 
+  display: none; 
+  
+  .ui-datepicker-header { 
+    .border-radius(2px); 
+    border: none; 
+    background: #deedf7; 
+    color: #222222; 
+    font-weight: bold; 
+    a { color: #222222; }
+  }
+
+  .ui-datepicker-prev, .ui-datepicker-next { 
+    position:absolute; 
+    top: 2px; 
+    width: 1.8em; 
+    height: 1.8em; 
+    cursor: pointer; 
+    span { 
+      display: block; 
+      position: absolute; 
+      left: 50%; 
+      margin-left: -8px; 
+      top: 50%; 
+      margin-top: -8px;
+      width: 16px; 
+      height: 16px;
+      display: block; 
+      text-indent: -99999px; 
+      overflow: hidden; 
+      background-repeat: no-repeat;
+    }
+  }
+  .ui-datepicker-prev { 
+    left:2px;
+    span { background: url('../img/arrow-left.png') center center no-repeat; }
+  }
+  .ui-datepicker-next { 
+    right:2px; 
+    span { background: url('../img/arrow-right.png') center center no-repeat; }
+  }
+  .ui-datepicker-title { 
+    margin: 0 2.3em; line-height: 1.8em; text-align: center; 
+    select { 
+      font-size: inherit; 
+      margin: 1px 0; 
+      height: auto;
+      border: 0;
+      .border-radius(0);
+      &.ui-datepicker-month-year { width: 100%; }
+      &.ui-datepicker-month, &.ui-datepicker-year { width: 49%; }
+    }
+  }
+  table {
+    width: 100%; 
+    font-size: .9em; 
+    border-collapse: collapse; 
+    margin: 0 0 .4em; 
+    
+    th { 
+      padding: 2px .3em; 
+      text-align: center; 
+      font-weight: bold; 
+      border: 0;  
+    }
+    td { 
+      border: 0; 
+      padding: 1px; 
+      span, a {
+        .border-radius(2px);
+        display: block; 
+        padding: .2em; 
+        text-align: right; 
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+.ui-datepicker-multi {
+  width:auto;
+  
+  .ui-datepicker-group { 
+    float:left; 
+    table { 
+      width: 95%; 
+      margin: 0 auto .4em; 
+    }
+  }
+  .ui-datepicker-buttonpane { clear:left; }
+  .ui-datepicker-row-break { clear:both; width:100%; }
+  
+  &.ui-datepicker-multi-2 .ui-datepicker-group { width:50%; }
+  &.ui-datepicker-multi-3 .ui-datepicker-group { width:33.3%; }
+  &.ui-datepicker-multi-4 .ui-datepicker-group { width:25%; }  
+}
+
+
+/**
+ * Amp grid styles.
+**/
+table.amp-grid {
+  table-layout:     fixed;
+  border:           1px solid #DDD;
+  border-collapse:  separate;
+  border-left:      0;
+  
+  th, td {
+    border-left: 1px solid #DDD;
+    border-bottom: 1px solid #DDD;
+    padding: 2px;
+    
+    &.number { text-align: right; }
+    &.text { text-align: left; }
+    &.date { text-align: center; }
+  }
+  
+  tr:last-child td {
+    border-bottom: none;
+  }
+  
+  th {
+    font-size: 13px;
+    background: #eef;
+    vertical-align: middle;
+
+    a {
+      float: right;
+      font-size: 10px;
+      width: 10px;
+    }
+    span {
+      display: inline-block;
+      margin-right: 5px;
+    }
+    
+    &.sortable { cursor: pointer; }
+    &.number { span { text-align: right; } }
+    &.text { span { text-align: left; } }
+    &.date { span { text-align: center; } }
+  }
+  
+  td {
+    vertical-align: middle;
+    font-size:      12px;
+    height:         20px;
+    line-height:    1;
+    overflow:       hidden;
+    position:       relative;
+    
+    /* Only for firefox */
+    div {
+      position: relative;
+      margin: -2px;
+      padding: 2px;
+    }
+    
+    i {
+      position: absolute;
+      top:      3px;
+      cursor:   pointer;
+    }
+    
+    &.text { 
+      &.editable { 
+        padding-right: 20px; 
+        div {
+          margin-right: -20px;
+        }
+      }
+      i { right: 3px; }
+    }
+
+    &.date {
+      &.editable { 
+        padding-right: 20px; 
+        div {
+          margin-right: -20px;
+        }
+      }
+      i { right: 3px; }
+    }
+  
+    &.number {
+      &.editable { 
+        padding-left: 20px; 
+        div {
+          margin-left: -20px;
+        }
+      }
+      i { left: 3px; }
+    }
+    
+    &.paginator {
+      text-align: center;
+      a {
+        display: inline-block;
+        padding: 3px 5px;
+        border:  solid 1px #ccc;
+        margin:  5px 3px;
+        cursor:  pointer;
+        
+        &.active {
+          color: white;
+          background: #ccc;
+        }
+      }
+    }
+    
+    input {
+      display:     inline-block;
+      z-index:     2;
+      position:    absolute;
+      top:         0;
+      left:        0;
+      border:      none;
+      display:     block;
+      height:      auto;
+      width:       auto;
+      padding:     3px;
+      margin:      none;
+      font-size:   12px;
+      line-height: auto;
+      color:       #555;
+      outline:     none;
+      background:  #ffc !important;
+      
+      .border-radius(0);
+      .box-shadow(none);
+      
+      &:focus, &.focused {
+        outline: none;
+        .box-shadow(none);
+        border: none;
+      }
+    }
+  } 
+}

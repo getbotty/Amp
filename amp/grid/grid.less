@@ -1,0 +1,142 @@
+/**
+ * Amp grid styles.
+**/
+table.amp-grid {
+  table-layout:     fixed;
+  border:           1px solid #DDD;
+  border-collapse:  separate;
+  border-left:      0;
+  
+  th, td {
+    border-left: 1px solid #DDD;
+    border-bottom: 1px solid #DDD;
+    padding: 2px;
+    
+    &.number { text-align: right; }
+    &.text { text-align: left; }
+    &.date { text-align: center; }
+  }
+  
+  tr:last-child td {
+    border-bottom: none;
+  }
+  
+  th {
+    font-size:        13px;
+    background-color: lighten(#B3D4FD, 10%);
+    vertical-align:   middle;
+    cursor:           default;
+    
+    &::selection { background: transparent; }
+    &::-moz-selection { background: transparent; }
+    
+    &.sortable { 
+      cursor: pointer; 
+      background-repeat: no-repeat;
+      background-position: right center;
+      padding-right: 20px;
+      background-image: url('images/dash.png');
+      
+      &.asc {
+        background-image: url('images/asc.png');
+      }
+      &.desc {
+        background-image: url('images/desc.png');
+      }
+    }
+  }
+  
+  td {
+    vertical-align: middle;
+    font-size:      12px;
+    height:         20px;
+    line-height:    1;
+    overflow:       hidden;
+    position:       relative;
+    
+    /* Only for firefox */
+    div {
+      position: relative;
+      margin: -2px;
+      padding: 2px;
+    }
+    
+    i {
+      position: absolute;
+      top:      3px;
+      cursor:   pointer;
+      width:    16px;
+      height:   16px;
+    }
+    
+    &.editable {
+      background-image: url('images/pencil.png');
+      background-repeat: no-repeat;
+      background-position: 2px center;
+      padding-left: 20px;
+    }
+        
+    &.paginator {
+      text-align: center;
+      background-color: #f5f5f5;
+      padding: 5px;
+      
+      &::selection { background: transparent; }
+      &::-moz-selection { background: transparent; }
+          
+      a {
+        display: inline-block;
+        padding: 3px 5px;
+        border:  solid 1px #ddd;
+        margin:  0 3px;
+        cursor:  pointer;
+        
+        &::selection { background: transparent; }
+        &::-moz-selection { background: transparent; }
+        
+        &.active {
+          color: white;
+          background:   #B3D4FD;
+          border-color: #B3D4FD;
+        }
+      }
+      
+      input {
+        width: 20px;
+        border: solid 1px #ddd;
+        text-align: right;
+        padding: 3px 5px;
+        margin:  0 3px;
+        
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+  } 
+}
+
+input.amp-grid-input {
+  display:           inline-block;
+  position:          absolute;
+  visibility:        hidden;
+  z-index:           2;
+  top:               0;
+  left:              0;
+  display:           block;
+  height:            auto;
+  width:             auto;
+  margin:            none;
+  font-size:         12px;
+  line-height:       auto;
+  color:             #555;
+  outline:           none;
+  background-color:  #ffc;
+  
+  &.amp-date {
+    background-color:  #fff;
+  }
+  &.shown {
+    visibility: visible;
+  }
+}

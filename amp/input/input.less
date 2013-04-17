@@ -1,0 +1,20 @@
+input.amp, textarea.amp {
+  display:        inline-block;
+  padding:        4px;
+  margin:         0;
+  border:         solid 1px #ccc;
+  background:     #fff;
+  color:          #333;
+  outline-offset: 0px;
+  
+  &[disabled] {
+    cursor:       default;
+    background:   #eee;
+    color:        #aaa;
+    border-color: #eee;
+  }
+  
+  &.amp-number { 
+    text-align: right; 
+  } 
+}

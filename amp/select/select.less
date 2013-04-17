@@ -1,0 +1,90 @@
+/**
+ * Amp Select/Combo styles
+**/
+
+input.amp, textarea.amp {
+  
+  &.amp-combo {
+    background-image:     url('./images/arrow-up-down.png');
+    background-position:  right center;
+    background-repeat:    no-repeat;    
+    padding-right:        20px;
+
+    &.amp-loading {
+      background-image:   url('./images/ajax-load.gif');
+    }
+  }
+  
+}
+
+button.amp.amp-select {
+  position:         relative;
+  text-align:       left;
+  padding:          4px;
+  background-color: #eee;
+
+  div {    
+    /* The div containing the up-down arrows icon */
+    &.i {
+      position:   absolute;
+      right:      0; 
+      top:        0; 
+      bottom:     0;
+      width:      20px;
+      
+      background-color:    transparent;
+      background-image:    url('./images/arrow-up-down.png');
+      background-repeat:   no-repeat;
+      background-position: right center;
+    }
+  
+    /* The div containing the label */
+    &.l {
+      margin:           0 15px 0 0;
+      overflow:         hidden;
+      text-overflow:    ellipsis;
+      white-space:      nowrap;
+      text-align:       left;
+      background-color: transparent;
+    }
+  }
+}
+
+div.amp-tags {
+  position:      relative;
+  padding:       0px 0px 3px;
+  border-bottom: solid 1px #ddd;
+  display:       inline-block;
+  
+  input.amp-combo, button.amp-select {
+    position:  relative;
+    width:     100%;
+  }
+  
+  span.amp-tag {
+    position: relative;
+    display:  inline-block;
+    padding:  2px 20px 2px 3px;
+    margin:   3px 2px 1px 0px;
+    cursor:   default;
+    border:   solid 1px #ddd;
+
+    a {      
+      position:    absolute;
+      display:     block;
+      right:       0.15em;
+      top:         0.2em;
+      width:       12px;
+      height:      13px;
+      font-size:   15px;
+      font-weight: bold;
+      line-height: 12px;
+      cursor:      pointer;
+      
+      &:focus {
+        outline:   solid 1px #ccf;
+        border:    solid 1px #ccf;
+      }
+    }
+  }
+}

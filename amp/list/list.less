@@ -1,0 +1,59 @@
+/**
+ * Lists' Styles
+**/
+div.amp-list {
+  -webkit-background-clip: padding-box;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+  position:   relative;
+  display:    inline-block;
+  border:     solid 1px #ddd;
+
+  ul{
+    margin:     0;
+    padding:    0;
+    border:     none;
+    list-style: none;
+    display:    block;
+
+    li{
+      margin:        0;      
+      padding:       3px 20px;
+      white-space:   nowrap;
+      cursor:        pointer;
+      border-bottom: #ddd;
+
+      background-position:  2px center;
+      background-repeat:    no-repeat;
+
+      &.focused {
+        background-color: #0064cd;
+        color:            #fff;
+
+        &.active {
+          background-color: #0064cd;
+          background-image: url('./images/tick-light.png');
+        }
+      }
+
+      &.active {
+        background-color: #fff;
+        background-image: url('./images/tick-dark.png');
+      }      
+    }
+  } 
+}
+
+div.amp-panel {
+  .box-shadow(0 2px 4px rgba(0,0,0,0.2));
+
+  z-index:    99999;
+  position:   absolute;
+  visibility: hidden;
+  background: #fff;
+
+  &.shown { 
+    visibility: visible; 
+  }
+}

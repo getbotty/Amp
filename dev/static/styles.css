@@ -1,0 +1,24 @@
+body {
+  font-family: "Helvetica Neue", Arial;
+  font-size:   13px;
+  color:       #444;
+}
+
+
+#container {
+  width: 960px;
+  min-height: 400px;
+  margin: 20px auto;
+  padding: 0 10px 10px;
+  border: solid 1px #ddd;
+}
+
+.row {
+  margin: 10px 0;
+  line-height: 20px;
+}
+
+.row label {
+  display: inline-block;
+  width: 100px;
+}
