@@ -1,11 +1,3 @@
-# Bauer
-
-1. Test on windows.
-2. Disallow dots "." in package build names (show a warning).
-3. Find why bauer crashes when you rename a submodule folder.
-
-# Amp
-
 1. Fix the checkboxes and button groups.
 2. Fix the display of tags in tag-lists. Broken in FF and windows.
 5. Test the list's ajax functionality.

@@ -509,9 +509,9 @@
    * Grid module initialization and delegated event handlers
   **/
   $(function(){
-    inputs.text   = $("<input class='amp-grid-input'>").prependTo(document.body).amp('text', { validators: {} });
-    inputs.number = $("<input class='amp-grid-input'>").prependTo(document.body).amp('number', { validators: {}, format: 0 });
-    inputs.date   = $("<input class='amp-grid-input'>").prependTo(document.body).amp('date', { validators: {}, format: 'yy-mm-dd' });
+    inputs.text   = $("<input class='amp-grid-input'>").amp('text', { validators: {} });
+    inputs.number = $("<input class='amp-grid-input'>").amp('number', { validators: {}, format: 0 });
+    inputs.date   = $("<input class='amp-grid-input'>").amp('date', { validators: {}, format: 'yy-mm-dd' });
     
     // We would normally just pass direction to the trigger method
     // but there appears to be a bug in jQuery 2.0 that prevents

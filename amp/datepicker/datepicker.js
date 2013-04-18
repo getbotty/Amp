@@ -13,7 +13,7 @@
     <button id='amp-dp-year-select' tabindex='-1'>&nbsp;</button>\
   </div>\
   <div class='amp-dpbody'></div>\
-</div>").prependTo(document.body);
+</div>");
   var cover = $('.amp-dpdiv-border-cover', datepicker);
       
   function Datepicker(element, options){
