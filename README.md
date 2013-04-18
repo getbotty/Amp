@@ -39,6 +39,13 @@ Amp was made to deal with complicated forms for banking applications with contro
     myDate.val();				// Returns a date object or `null`
     myDate.val(new Date());  	// Sets the date and updates the <input> with the correct format
 
+# Usage
+
+Be sure to include jQuery 1.9.1, BackboneJS 1.0.0 and Underscore 1.4.4. Then drop the `build` folder in your project and just add the following tags to your HTML page:
+
+	<script src="/build/scripts.js"></script>
+	<link rel="stylesheet" href="/build/styles.css">
+
 # Demo 
 [http://discobot.net/en/posts/amp-demo](http://discobot.net/en/posts/amp-demo)
 
