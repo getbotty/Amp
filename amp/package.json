@@ -16,6 +16,5 @@
 
         "classic":      [ "barebones", "./theme-classic" ],
         "flat":         [ "barebones", "./theme-flat" ],
-        "statusmk":     [ "./extensions", "./core", "./button", "./list", "./select" ]
     }
 }
