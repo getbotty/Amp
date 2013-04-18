@@ -1,0 +1,7 @@
+{
+    "watch":      [ "./build.json" ],
+    "search":     [ "amp" ],
+    "ignore":     [ ],
+    "monitor":    true,
+    "createDirs": true
+}

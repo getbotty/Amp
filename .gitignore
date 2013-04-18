@@ -1,5 +1,4 @@
-node_modules
-project/static
+dev/node_modules
 
 .svn
 .DS_Store

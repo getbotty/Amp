@@ -1,0 +1,8 @@
+[{
+    "output":   "build",
+    "ignore":   [ "jquery = 1.9.1", "backbone = 1.0.0", "underscore = 1.4.4" ],
+    "include":  [ "amp.grid >= 1.0.0" ],
+
+    "minify_js":  false,
+    "minify_css": false
+}]
