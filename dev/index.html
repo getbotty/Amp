@@ -22,7 +22,7 @@
     
     <div class="row">
       <label>Text Input</label>
-      <input type="text" id="text-input">
+      <input type="text" id="text-input" value="Hello">
     </div>
     
     <div class="row">
@@ -94,7 +94,7 @@
           $('#checkbox-button').amp('checkbox', {  });
           $('#disabled-button').amp('button', { disabled: true });
       
-          $('#text-input').amp('text', { format: /^A.+S$/ });
+          $('#text-input').amp('text', {  });
           $('#number-input').amp('number', { value: 19, format: 2, min: 0.01, max: 9.99 });
           $('#date-input').amp('date', { changeYear: true, changeMonth: true, beforeShowDay: function(date){ return [date.getDay() % 6 !== 0, '']; } });
           $('#combo-input').amp('combo', { items: countries });
@@ -138,7 +138,7 @@
               pagination: {
                 links:    9,
                 pageSize: 3,
-                dataSize: 30,
+                dataSize: 60,
                 pageAttr: 'p',
                 sizeAttr: 's',
                 method:   'changePage',

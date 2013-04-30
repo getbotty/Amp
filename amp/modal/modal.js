@@ -6,8 +6,10 @@
  * ==================================== */
 
 ;(function($, Amp) {
+  var backdropClass = ''; 
+  var backdropShown = false;
   var slice = Array.prototype.slice;
-  var backdrop = null;
+  var backdrop = $('<div class="amp-modal-backdrop"></div>');
   var curmodal = null;
   
   function Modal(element, options){
@@ -45,7 +47,8 @@
     
     show: function() {
       if(this.trigger.apply(this, ['beforeshow'].concat(slice.call(arguments)))) {
-        $('body').append(backdrop || (backdrop = $('<div class="modal-backdrop"></div>')));
+        $(document.body).append(backdrop);
+        backdropShown = true;
         this.element.addClass('shown');
         this.captureTab(true).trigger('show');
         this.position();
@@ -58,6 +61,7 @@
       this.__unbinder && this.__unbinder();
       if(this.trigger.apply(this, ['beforehide'].concat(slice.call(arguments)))) {
         backdrop && backdrop.detach();
+        backdropShown = false;
         this.element.removeClass('shown');
         this.trigger('hide');
         curmodal = null;
@@ -87,4 +91,18 @@
 
   Amp.controls.modal = Modal;
   Amp.registerMethods(['captureTab']);
+  
+  Amp.showBackdrop = function(klass){
+    if(!backdropShown) {
+      $(document.body).prepend(backdrop);
+      klass && backdrop.addClass(backdropClass = klass);
+    }
+  }
+  Amp.hideBackdrop = function(){
+    if(backdropShown) {
+      backdrop.removeClass(backdropClass).detach();
+      className = '';
+    }
+  }
+  
 })(window.jQuery, window.Amp);

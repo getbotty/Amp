@@ -99,7 +99,7 @@
     _.each(methods, function(name){
       Amp.AmpProxy.prototype[name] = function(){
         var args    = arguments;
-        var results = this.amps.map(function(amp){ 
+        var results = this._amps.map(function(amp){ 
           if( amp instanceof $ ) {
             switch( name ){
               case 'disable': return amp.attr('disabled', 'disabled');
@@ -122,14 +122,35 @@
    * Amp proxy for multiple Amp elements
   **/
   Amp.AmpProxy = function(amps){
-    if( !_.isArray(amps) ) amps = Array.prototype.slice.call(arguments);
+    if( !_.isArray(amps) ) {
+      amps = Array.prototype.slice.call(arguments);
+    }
 
     // Fix missing `new` keyword
     if( this === Amp || this === window ) {
       return new Amp.AmpProxy(amps);
     }
-    this.amps = amps;
-    this.pointer = 0;
+    this._amps = amps;
+  }
+  
+  Amp.AmpProxy.prototype.minus = function(amps){
+    if(amps instanceof Amp.AmpProxy) {
+      amps = amps._amps;
+    }
+    else if( !_.isArray(amps) ) {
+      amps = Array.prototype.slice.call(arguments);
+    }
+    return new Amp.AmpProxy(_.difference(this._amps, amps));
+  }
+  
+  Amp.AmpProxy.prototype.plus = function(amps){
+    if(amps instanceof Amp.AmpProxy) {
+      amps = amps._amps;
+    }
+    else if( !_.isArray(amps) ) {
+      amps = Array.prototype.slice.call(arguments);
+    }
+    return new Amp.AmpProxy(_.union(this._amps, amps));
   }
   
   /**

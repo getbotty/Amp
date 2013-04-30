@@ -3513,7 +3513,7 @@
     _.each(methods, function(name){
       Amp.AmpProxy.prototype[name] = function(){
         var args    = arguments;
-        var results = this.amps.map(function(amp){ 
+        var results = this._amps.map(function(amp){ 
           if( amp instanceof $ ) {
             switch( name ){
               case 'disable': return amp.attr('disabled', 'disabled');
@@ -3536,14 +3536,35 @@
    * Amp proxy for multiple Amp elements
   **/
   Amp.AmpProxy = function(amps){
-    if( !_.isArray(amps) ) amps = Array.prototype.slice.call(arguments);
+    if( !_.isArray(amps) ) {
+      amps = Array.prototype.slice.call(arguments);
+    }
 
     // Fix missing `new` keyword
     if( this === Amp || this === window ) {
       return new Amp.AmpProxy(amps);
     }
-    this.amps = amps;
-    this.pointer = 0;
+    this._amps = amps;
+  }
+  
+  Amp.AmpProxy.prototype.minus = function(amps){
+    if(amps instanceof Amp.AmpProxy) {
+      amps = amps._amps;
+    }
+    else if( !_.isArray(amps) ) {
+      amps = Array.prototype.slice.call(arguments);
+    }
+    return new Amp.AmpProxy(_.difference(this._amps, amps));
+  }
+  
+  Amp.AmpProxy.prototype.plus = function(amps){
+    if(amps instanceof Amp.AmpProxy) {
+      amps = amps._amps;
+    }
+    else if( !_.isArray(amps) ) {
+      amps = Array.prototype.slice.call(arguments);
+    }
+    return new Amp.AmpProxy(_.union(this._amps, amps));
   }
   
   /**
@@ -5141,7 +5162,7 @@
     <button id='amp-dp-year-select' tabindex='-1'>&nbsp;</button>\
   </div>\
   <div class='amp-dpbody'></div>\
-</div>").prependTo(document.body);
+</div>");
   var cover = $('.amp-dpdiv-border-cover', datepicker);
       
   function Datepicker(element, options){
@@ -5258,9 +5279,9 @@
       var year  = date.getFullYear();
       var month = date.getMonth();
       var rnum  = parseInt(this.options.range, 10);
-      var range = this.options.range[0] === "+" ? [year, year + rnum] : this.options.range[0] === "-" ? [year + rnum, 0] : [year - rnum, year + rnum];
+      var range = this.options.range[0] === "+" ? [year, year + rnum] : this.options.range[0] === "-" ? [year + rnum, year] : [year - rnum, year + rnum];
       var i, yearItems = [];
-      
+
       for(i=range[0]; i<=range[1]; ++i) {
         yearItems.push({ value: "" + i, label: i });
       }
@@ -5345,7 +5366,8 @@
       
       datepicker.curinst = this;
       datepicker.addClass('shown');
-      
+      this.trigger('show');
+
       return this;
     },
     
@@ -5380,6 +5402,9 @@
       this.element.removeClass('active');
       datepicker.curinst = null;
       datepicker.removeClass('shown');
+      this.trigger('hide');
+      
+      return this;
     },
 
     toString: function(){
@@ -5495,8 +5520,10 @@
  * ==================================== */
 
 ;(function($, Amp) {
+  var backdropClass = ''; 
+  var backdropShown = false;
   var slice = Array.prototype.slice;
-  var backdrop = null;
+  var backdrop = $('<div class="amp-modal-backdrop"></div>');
   var curmodal = null;
   
   function Modal(element, options){
@@ -5534,7 +5561,8 @@
     
     show: function() {
       if(this.trigger.apply(this, ['beforeshow'].concat(slice.call(arguments)))) {
-        $('body').append(backdrop || (backdrop = $('<div class="modal-backdrop"></div>')));
+        $(document.body).append(backdrop);
+        backdropShown = true;
         this.element.addClass('shown');
         this.captureTab(true).trigger('show');
         this.position();
@@ -5547,6 +5575,7 @@
       this.__unbinder && this.__unbinder();
       if(this.trigger.apply(this, ['beforehide'].concat(slice.call(arguments)))) {
         backdrop && backdrop.detach();
+        backdropShown = false;
         this.element.removeClass('shown');
         this.trigger('hide');
         curmodal = null;
@@ -5576,6 +5605,20 @@
 
   Amp.controls.modal = Modal;
   Amp.registerMethods(['captureTab']);
+  
+  Amp.showBackdrop = function(klass){
+    if(!backdropShown) {
+      $(document.body).prepend(backdrop);
+      klass && backdrop.addClass(backdropClass = klass);
+    }
+  }
+  Amp.hideBackdrop = function(){
+    if(backdropShown) {
+      backdrop.removeClass(backdropClass).detach();
+      className = '';
+    }
+  }
+  
 })(window.jQuery, window.Amp);
 
 /* ====================================
@@ -5892,6 +5935,7 @@
       }
       this.body.html(html);
       this._makeFooter();
+      return this;
     },
 
     /**
@@ -5939,7 +5983,7 @@
      * This is automatically called when the pagination settings are changed.
     **/
     _makeFooter: function(){
-      var i, max, html, active, footer;
+      var i, max, html, active, footer, links;
 
       if(!this._pagination) {
         return;
@@ -5952,8 +5996,9 @@
       html = "<td class='paginator' colspan='" + this._columnsOrder.length + "'>";
       html += "Page <input data-grid='" +  this.guid + "' value='" + this._currentPage + "'> of <b>" + this._totalPages + "</b> &nbsp; ";
       
-      i = Math.min(Math.max(1, this._currentPage - Math.floor(this._pageLinks / 2)), this._totalPages - this._pageLinks + 1);
-      max = i + this._pageLinks;
+      links = Math.min(this._pageLinks, this._totalPages);
+      i     = Math.min(Math.max(1, this._currentPage - Math.floor(links / 2)), this._totalPages - links + 1);
+      max   = i + links;
       for(; i < max; i++){
         active = (i === this._currentPage) ? " active" : "";
         html += "<a data-grid='" + this.guid + "' data-page='" + i + "' class='amp-grid-page" + active + "'>" + i + "</a>";
@@ -6024,7 +6069,11 @@
 
       switch(info.type) {
         case 'number': 
-          value = (typeof value === 'number') ? value.format(info.format || 0) : ('falsy' in info ? info.falsy : "");
+          value = typeof value === 'number' 
+            ? value === 0
+              ? ('falsy' in info ? info.falsy : value.format(info.format || 0))
+              : value.format(info.format || 0)
+            : ('falsy' in info ? info.falsy : "");
           break;
         case 'date': 
           value = Date.formatDate(info.format, value); 
@@ -6036,7 +6085,7 @@
           value = value;
           break;
         default: 
-          value = (typeof value === 'undefined') ? ('falsy' in info ? info.falsy : '') : value; 
+          value = value ? value : ('falsy' in info ? info.falsy : value); 
           break;
       }
 
@@ -6056,12 +6105,12 @@
       var h      = td.outerHeight();
       var p      = td.position();
       var parent = td.offsetParent();
-      
+
       var input  = inputs[column.type];
       if(!input) {
         return;
       }
-      
+
       // Offset parent returns document. We need body.
       if(parent[0].tagName === 'HTML') {
         parent = $(document.body);
@@ -6069,17 +6118,21 @@
 
       input.setFormat(column.format);
       input.val(item.get(field), true);
+      
+      // Store the input's current value
+      item.__amp_input_prev = input.val();
 
       _.isFunction(column.editStart) && column.editStart.call(this.src, item, input);
-
-      input.element.css({ 
-        height: h - (input.element.outerWidth() - input.element.width()), 
-        width:  w - (input.element.outerHeight() - input.element.height()), 
-        top:    p.top, 
-        left:   p.left 
-      })
+      
+      input.element
       .addClass('shown')
-      .appendTo( parent );
+      .appendTo( parent )
+      .css({ 
+        height: h - (input.element.outerHeight() - input.element.height()),
+        width:  w - (input.element.outerWidth() - input.element.width()),
+        top:    p.top,
+        left:   p.left 
+      });
 
       input.__grid = this;
       input.__prop = field;
@@ -6098,18 +6151,23 @@
      * Wraps up the cell editing actions
     **/
     _editEnd: function(field, input){
-      var v, n, sel; 
+      var n, sel, column = this._columns[field]; 
       
       if( !this._editedItem ) {
         return;
       }
 
-      v = this._editedItem.get(field);
-      n = input.val();
-
-      if("" + v !== "" + n) {
-        this._editedItem.set(field, n);
+      var n = input.val();
+      
+      // Check if the input's value has changed.
+      // We don't compare agains the item's value because the internal 
+      // value of the item might have a different precision than its format.
+      if(this._editedItem.__amp_input_prev !== n) {
+        this._editedItem.set(field, n, { gridEdit: true });
       }
+      _.isFunction(column.editEnd) && column.editEnd.call(this.src, this._editedItem, input);
+
+      delete this._editedItem.__amp_input_prev;
       this._editedItem = null;
 
       // Deselect the selected text before blurring. 
@@ -6138,8 +6196,8 @@
      * It is determined relative to the currently edited cell.
     **/
     _getOffsetField: function(row, field, direction) {
-      var c, i = -1, cols = this._columnsOrder;
-      
+      var f, i = -1, cols = this._columnsOrder, c = this._columns[field];
+
       if(direction[0]){
         while(c = cols[++i]) {
           c = this._columns[c];
@@ -6167,9 +6225,21 @@
       }
 
       if(direction[1]){
-        i = this.src.indexOf(row) + direction[1];
-        i = i >= this.src.length ? 0 : i < 0 ? this.src.length - 1 : i;
-        row = this.src.at(i);
+        while(1){
+          i = this.src.indexOf(row) + direction[1];
+          i = i >= this.src.length ? 0 : i < 0 ? this.src.length - 1 : i;
+          row = this.src.at(i);
+
+          if(_.isFunction(c.editable) ? c.editable(row) : c.editable){
+            break;
+          }
+          if(!row) {
+            row = direction[1] > 0 ? this.src.first() : this.src.last();
+            if(_.isFunction(c.editable) ? c.editable(row) : c.editable){
+              break;
+            }
+          }
+        }
       }
 
       return { cid: row.cid, field: field };
@@ -6180,15 +6250,15 @@
    * Grid module initialization and delegated event handlers
   **/
   $(function(){
-    inputs.text   = $("<input class='amp-grid-input'>").prependTo(document.body).amp('text', { validators: {} });
-    inputs.number = $("<input class='amp-grid-input'>").prependTo(document.body).amp('number', { validators: {}, format: 0 });
-    inputs.date   = $("<input class='amp-grid-input'>").prependTo(document.body).amp('date', { validators: {}, format: 'yy-mm-dd' });
+    inputs.text   = $("<input class='amp-grid-input'>").amp('text', { validator: {} });
+    inputs.number = $("<input class='amp-grid-input'>").amp('number', { validator: {}, format: 0 });
+    inputs.date   = $("<input class='amp-grid-input'>").amp('date', { validator: {}, format: 'yy-mm-dd' });
     
     // We would normally just pass direction to the trigger method
     // but there appears to be a bug in jQuery 2.0 that prevents
     // the extra arguments to reach the blur handler. 
     var direction = false;
-    
+
     _.each(inputs, function(input, type){
       input.element.on({
         blur: function(e){

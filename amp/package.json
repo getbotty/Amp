@@ -1,7 +1,7 @@
 {
     "name":             "amp",
     "version":          "1.0.0",
-    "description":      "Better form controls for comlicated web applications",
+    "description":      "Better form controls for complicated web applications",
     "author":           "Dusko Jordanovski <jordanovski.d@quipugmbh.com>",
 
     "dependencies": {
@@ -15,6 +15,6 @@
         "grid":         [ "barebones", "./grid" ],
 
         "classic":      [ "barebones", "./theme-classic" ],
-        "flat":         [ "barebones", "./theme-flat" ],
+        "flat":         [ "barebones", "./theme-flat" ]
     }
 }

@@ -130,9 +130,9 @@
       var year  = date.getFullYear();
       var month = date.getMonth();
       var rnum  = parseInt(this.options.range, 10);
-      var range = this.options.range[0] === "+" ? [year, year + rnum] : this.options.range[0] === "-" ? [year + rnum, 0] : [year - rnum, year + rnum];
+      var range = this.options.range[0] === "+" ? [year, year + rnum] : this.options.range[0] === "-" ? [year + rnum, year] : [year - rnum, year + rnum];
       var i, yearItems = [];
-      
+
       for(i=range[0]; i<=range[1]; ++i) {
         yearItems.push({ value: "" + i, label: i });
       }
@@ -217,7 +217,8 @@
       
       datepicker.curinst = this;
       datepicker.addClass('shown');
-      
+      this.trigger('show');
+
       return this;
     },
     
@@ -252,6 +253,9 @@
       this.element.removeClass('active');
       datepicker.curinst = null;
       datepicker.removeClass('shown');
+      this.trigger('hide');
+      
+      return this;
     },
 
     toString: function(){

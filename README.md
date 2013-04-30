@@ -521,6 +521,9 @@ The grid control transforms a block element into a grid that will display the da
           colAttr:    'sort',
           dirAttr:    'dir'
         },
+        rowAttrs: function(item){
+          
+        },
         columns: [{
           id: 'name',
           type: 'text',
@@ -572,6 +575,10 @@ The Backbone collection never keeps the entire datasetm but rather what's displa
 - `dirAttr` - *string*; Name of the querystring key that denotes the sorting direction.
 - `method` - *string*; Name of the collection's method that will handle sorting. This method will receive 3 arguments: `column`, `direction` and `query`. The first 2 are the property name and direction, and the third is a query with additional parameters (set by setParams). Note that paging is not conserved on a sort-order change since it doesn't really make sense. The method should make sure that some kind of event is triggered (i.e. `reset`) which you can use to re-render the grid.
 
+#### rowAttrs:
+
+This should normally be a function that returns an object, or just an object. If it's a function, it will be passed the currently rendered item as the only argument. The object it returns will be added as attributes to the &lt;tr&gt; element of the table.
+
 ### Column Options
 
 - `id` - *string*; The id of the column. If it has the same name as a model property - the property value will be rendered in the grid.
@@ -585,6 +592,14 @@ The Backbone collection never keeps the entire datasetm but rather what's displa
 - `content` - *function*; Normally used with `type:composite`, the function will be passed the row model and the result will be rendered in each cell instead of the default property value. It will override the defaut content of other types as well.
 - `alsoChange` - *array*; A list of ids of other columns. When a `change` event is triggered on the row model forcing a redraw of a cell, a redraws will be fired on the same model for these cells as well.
 - `fallback` - *mixed*; If a property's value is falsy, this value (cast to string) will be shown instead.
+
+### Editing
+
+When an item is edited, it will normally trigger a backbone "change:attribute" event. The grid will pass the following option (see backbone events):
+
+		{ gridEdit: true }
+
+You can use this to check if the change has been made by using the grid edit facility.
 
 # Utilities
 
