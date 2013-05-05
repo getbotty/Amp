@@ -164,10 +164,36 @@
                   type:       "text",
                   name:       "Date Text",
                   content:    function(item){
-                    return "" + item.get('date');
+                    return Date.formatDate('mm/dd/yy', item.get('date'));
+                  }
+                },{
+                  id:         "enum",
+                  type:       "enum",
+                  name:       "Enums",
+                  items:      [{ value: "yes", label: "Indeed" }, { value: "no", label: "Not Quite So" }],
+                  editable:   true,
+                  falsy:      ""
+                },{
+                  id:         "more_enums",
+                  type:       "enum",
+                  name:       "More enums",
+                  items:      [{ value: "yes", label: "Value one" }, { value: "no", label: "Value Two" }, { value: "3", label: "Large Value three. It's long." }],
+                  editable:   true,
+                  falsy:      ""
+                },{ 
+                  id: "disbursement", 
+                  type: 'number', 
+                  name: "Disbursement", 
+                  format: 2,
+                  action: function(item) {
+                    return {
+                      icon: 'icon-recycle',
+                      handler: function(){
+                        alert(item.cid)
+                      }
+                    }
                   }
                 },
-                { id: "disbursement", type: 'number', name: "Disbursement", format: 2 },
                 { id: "interestRate", type: 'number', name: "Rate in %",    format: 5, editable: true, sortable: true },
                 { id: "repayment",    type: 'number', name: "Repayment",    format: 2, fallback: 0, editable: true },
                 { id: "accrued",      type: 'number', name: "Accrued",      format: 2 },

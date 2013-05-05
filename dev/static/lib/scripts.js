@@ -4145,9 +4145,10 @@
  * Used as a standalone list and 
  * a part of the Select and Combo controls.
 **/
-
 ;(function($, Amp){
-    
+  // A guid counter for list items that belong to lists without IDs
+  var GUID = 0;
+   
   /**
    * List control constructor.
    * The list control is used by Select and Combo, but can also be a standalone list.
@@ -4155,7 +4156,8 @@
   **/
   function List(element, options){
     var value, list;
- 
+    
+    element[0].id || element.attr('id', GUID++);
     options = _.extend({
       standalone: true,    // If true, the list behaves as a control (can be focused, events can be bound, etc...)
       multiple:   false,   // Whether multiple elements can be selected
@@ -4361,7 +4363,7 @@
       this._focused = element && element.addClass('focused');
       return this;
     },
-
+    
     /** 
      * Focuses on the item with specified index or to the next/previous item.
      * If we focus the next/previous item and nothing is focused, then we use the 
@@ -4372,7 +4374,7 @@
     **/
     focusItem: function(index) {
       var nf, id = this.element.get(0).id, fo = this.focusElement();
-
+      
       if(index === '+') {
         index = fo ? $(fo.next()) : [];
         if(fo && !index.length) {
@@ -4448,6 +4450,8 @@
       var self = this;
       var oldValue = this.toJSON();
       
+      this._focused = null;
+      
       function handleValues(items){
         self.items = items;
         self.__set(oldValue, silenceChange);
@@ -4502,7 +4506,7 @@
      * @return Number Number of rendered items.
      */
     render: function(){
-      var id     = this.element[0].id; 
+      var id     = this.element[0].id;
       var sel    = this.selected;
       var html   = []; 
       var count  = 0;
@@ -5591,14 +5595,13 @@
 
 
   $(function(){
-    $(document.body)
-    .keydown(function(e){
+    $(document.body).keydown(function(e){
       if(e.which === Amp.keys.ESCAPE && curmodal) {
         curmodal && curmodal.hide();
         return false;
       }
-    })
-    .delegate('.modal-backdrop', 'click', function(){
+    });
+    backdrop.click(function(){
       curmodal && curmodal.hide();
     });
   });
@@ -5608,14 +5611,16 @@
   
   Amp.showBackdrop = function(klass){
     if(!backdropShown) {
-      $(document.body).prepend(backdrop);
+      backdropShown = true;
       klass && backdrop.addClass(backdropClass = klass);
+      $(document.body).prepend(backdrop);
     }
   }
   Amp.hideBackdrop = function(){
     if(backdropShown) {
       backdrop.removeClass(backdropClass).detach();
-      className = '';
+      backdropClass = '';
+      backdropShown = false;
     }
   }
   
@@ -5755,12 +5760,15 @@
       var row = $('tr#grid-' + grid.guid + '-' + item.cid);
       for(prop in item.changed){
         if(prop in grid._columns){
-          $('td[data-prop="' + prop + '"]', row).html( grid._formatCell(item, prop) );
+          $('td[data-prop="' + prop + '"]', row).replaceWith( grid._formatCell(item, prop) );
+
           if(grid._columns[prop].alsoChange) {
             _.map(grid._columns[prop].alsoChange, function(also){
+              
               if(also !== prop && (also in grid._columns)) {
-                $('td[data-prop="' + also + '"]', row).html( grid._formatCell(item, also) );
+                $('td[data-prop="' + also + '"]', row).replaceWith( grid._formatCell(item, also) );
               }
+
             });
           }
         }
@@ -5925,12 +5933,7 @@
         rowattrs.id = 'grid-' + this.guid + '-' + item.cid;
 
         html += "<tr " + makeAttrs(rowattrs) + ">";
-        html += _.map(self._columnsOrder, function(id){
-          var info  = self._columns[id];
-          var ed    = _.isFunction(info.editable) ? info.editable(item) : info.editable;
-          var attrs = makeAttrs({ 'data-prop': info.id, 'class': (info.type || 'text') + (ed ? " editable" : "") });
-          return "<td " + attrs + ">" + self._formatCell(item, info.id) + "</td>";
-        }).join("");
+        html += _.map(self._columnsOrder, function(id){ return self._formatCell(item, id); }).join("");
         html += "</tr>";
       }
       this.body.html(html);
@@ -6064,8 +6067,20 @@
      * Returns the formatted string representation of the cell data
     **/
     _formatCell: function(item, prop){
-      var info  = this._columns[prop];
-      var value = _.isFunction(info.content) ? info.content(item) : item.get(prop);
+      var info      = this._columns[prop];
+      var value     = _.isFunction(info.content) ? info.content(item) : item.get(prop);
+      var className = info.type || 'text';
+      var action    = _.isFunction(info.action) ? info.action(item) : _.isObject(info.action) ? info.action : null;
+      var attrs;
+
+      // Custom actions override editable
+      if(action && action.icon) {
+        className += ' action ' + action.icon;
+      }
+      else if( _.isFunction(info.editable) ? info.editable(item) : info.editable ) {
+        className += ' action editable';
+      }
+      attrs = makeAttrs({ 'data-prop': info.id, 'class': className });
 
       switch(info.type) {
         case 'number': 
@@ -6082,18 +6097,17 @@
           value = value ? 'True' : 'False';
           break;
         case 'enum':
-          value = value;
+          value = info.items ? _.find(info.items, function(e){ return e.value === value; }) : value;
+          value = !value && 'falsy' in info ? info.falsy : value.label;
           break;
         default: 
           value = value ? value : ('falsy' in info ? info.falsy : value); 
           break;
       }
-
-      return value;
+      
+      return "<td " + attrs + ">" + value + "</td>";
     },
     
-
-
     /**
      * Handles the cell editing setup actions
     **/
@@ -6110,33 +6124,49 @@
       if(!input) {
         return;
       }
-
+            
       // Offset parent returns document. We need body.
       if(parent[0].tagName === 'HTML') {
         parent = $(document.body);
       }
-
-      input.setFormat(column.format);
+      
+      if(input === inputs.enum) {
+        input.reset(column.items, true, true);
+      }
+      else {
+        input.setFormat(column.format);
+      }
       input.val(item.get(field), true);
       
       // Store the input's current value
       item.__amp_input_prev = input.val();
 
       _.isFunction(column.editStart) && column.editStart.call(this.src, item, input);
+
+      input.element.addClass('shown').appendTo(parent)
       
-      input.element
-      .addClass('shown')
-      .appendTo( parent )
-      .css({ 
-        height: h - (input.element.outerHeight() - input.element.height()),
-        width:  w - (input.element.outerWidth() - input.element.width()),
-        top:    p.top,
-        left:   p.left 
-      });
+      if(input === inputs.enum) {
+        input.render();
+        input.element.css({ top: p.top - 3, left: p.left - 3 });
+      }
+      else {
+        input.element.css({ 
+          height: h - (input.element.outerHeight() - input.element.height()),
+          width:  w - (input.element.outerWidth() - input.element.width()),
+          top:    p.top,
+          left:   p.left 
+        });
+      }
 
       input.__grid = this;
       input.__prop = field;
-      input === inputs.date && input.show();
+
+      if(input === inputs.date){
+        input.show();
+      }
+      else if(input === inputs.enum) {
+        input.focusItem(input.val()[0] || 0);
+      }
 
       // Delay the focus() method till the next tick because it will
       // trigger another blur event calling this function again.
@@ -6158,6 +6188,9 @@
       }
 
       var n = input.val();
+      if(input === inputs.enum) {
+        n = input.toJSON()[0] || null;
+      }
       
       // Check if the input's value has changed.
       // We don't compare agains the item's value because the internal 
@@ -6253,6 +6286,7 @@
     inputs.text   = $("<input class='amp-grid-input'>").amp('text', { validator: {} });
     inputs.number = $("<input class='amp-grid-input'>").amp('number', { validator: {}, format: 0 });
     inputs.date   = $("<input class='amp-grid-input'>").amp('date', { validator: {}, format: 'yy-mm-dd' });
+    inputs.enum   = $("<div class='amp-grid-input amp-panel'></div>").amp('list', { items: [], multiple: false });
     
     // We would normally just pass direction to the trigger method
     // but there appears to be a bug in jQuery 2.0 that prevents
@@ -6260,6 +6294,65 @@
     var direction = false;
 
     _.each(inputs, function(input, type){
+      
+      if(type === 'enum') {
+        
+        input.element.on({
+          blur: function(e){
+            var prop, grid, next, self  = $(this), input = self.amp();
+            if(input.__innerClick) {
+              return;
+            }
+            prop  = input.__prop;
+            grid  = input.__grid;
+            next  = direction && grid._getOffsetField(grid._editedItem, prop, direction);
+
+            // Inform the grid that the editing ended.          
+            grid._editEnd(prop, input);
+            next && grid._editStart(next.cid, next.field);
+
+            return direction = false;
+          },
+          keydown: function(e){
+            var fe;
+            
+            if(e.which === Amp.keys.ESCAPE) {
+              $(this).trigger('blur');
+            }
+            else if(e.which === Amp.keys.UP) {
+              if((fe = input.focusElement()) && fe.is(':first-child')) {
+                direction = [0, -1];
+                $(this).trigger('blur');
+                return false;
+              }
+            }
+            else if(e.which === Amp.keys.DOWN) {
+              if((fe = input.focusElement()) && fe.is(':last-child')) {
+                direction = [0, 1];
+                $(this).trigger('blur');
+                return false;
+              }
+            }
+            else if(e.which === Amp.keys.LEFT) {
+              direction = [-1, 0];
+              $(this).trigger('blur');
+              return false;
+            }
+            else if(e.which === Amp.keys.RIGHT) {
+              direction = [1, 0];
+              $(this).trigger('blur');
+              return false;
+            }
+            else if(e.which === Amp.keys.TAB) {
+              direction = [e.shiftKey ? -1 : 1, 0];
+              $(this).trigger('blur');
+              return false;
+            }
+          }
+        });
+        return;
+      }
+      
       input.element.on({
         blur: function(e){
           var prop, grid, next, self  = $(this), input = self.amp();
@@ -6318,11 +6411,22 @@
     });
 
     $('body')
-    .delegate('table.amp-grid td.editable', {
+    .delegate('table.amp-grid td.action', {
       click: function(){
         if(this.style.cursor === 'pointer') {
-          var self = $(this), id = self.parent().attr('id').split('-');
-          cache[ id[1] ]._editStart( id[2], self.data('prop') ).element.focus().select();
+          var self = $(this); 
+          var id   = self.parent().attr('id').split('-');
+          var grid = cache[ id[1] ];
+          var cid  = grid.src.get(id[2]);
+          var prop = self.data('prop');
+
+          var action, info = grid._columns[prop];
+          if(action = _.isFunction(info.action) ? info.action( grid.src.get(cid) ) : _.isObject(info.action) ? info.action : null) {
+            return action.handler(grid.src.get(cid));
+          }          
+          if( self.hasClass('editable') ) {
+            grid._editStart(cid, prop).element.focus().select();
+          }
         }
       },
       mousemove: function(e){
@@ -6342,7 +6446,7 @@
     .delegate('table.amp-grid th.sortable', 'click', function(){
       cache[ $(this).parent().data('grid') ]._sort( $(this).data('prop') );
     })
-    .delegate('table tr.footer input', 'keydown', function(e){
+    .delegate('table.amp-grid tr.footer input', 'keydown', function(e){
       if(e.which !== 13) {
         return;
       }

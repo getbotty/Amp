@@ -26,6 +26,7 @@ table.amp-grid {
     background-color: lighten(#B3D4FD, 10%);
     vertical-align:   middle;
     cursor:           default;
+    padding:          4px;
     
     &::selection { background: transparent; }
     &::-moz-selection { background: transparent; }
@@ -47,33 +48,18 @@ table.amp-grid {
   }
   
   td {
+    padding:        4px;
     vertical-align: middle;
     font-size:      12px;
-    height:         20px;
-    line-height:    1;
-    overflow:       hidden;
-    position:       relative;
     
-    /* Only for firefox */
-    div {
-      position: relative;
-      margin: -2px;
-      padding: 2px;
-    }
-    
-    i {
-      position: absolute;
-      top:      3px;
-      cursor:   pointer;
-      width:    16px;
-      height:   16px;
+    &.action {
+      background-repeat: no-repeat;
+      background-position: 2px center;
+      padding-left: 20px;
     }
     
     &.editable {
       background-image: url('images/pencil.png');
-      background-repeat: no-repeat;
-      background-position: 2px center;
-      padding-left: 20px;
     }
         
     &.paginator {
@@ -117,7 +103,6 @@ table.amp-grid {
 }
 
 input.amp-grid-input {
-  display:           inline-block;
   position:          absolute;
   visibility:        hidden;
   z-index:           2;
@@ -136,6 +121,26 @@ input.amp-grid-input {
   &.amp-date {
     background-color:  #fff;
   }
+  &.shown {
+    visibility: visible;
+  }
+}
+
+div.amp.amp-list.amp-grid-input {
+  background-color:  #fff;
+  position:          absolute;
+  visibility:        hidden;
+  z-index:           2;
+  top:               0;
+  left:              0;
+  display:           block;
+  height:            auto;
+  width:             auto;
+  margin:            none;
+  font-size:         12px;
+  line-height:       auto;
+  outline:           none;
+  
   &.shown {
     visibility: visible;
   }

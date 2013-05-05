@@ -22,3 +22,7 @@ body {
   display: inline-block;
   width: 100px;
 }
+
+table.amp-grid td.icon-recycle {
+  background-image: url("./recycle.png");
+}

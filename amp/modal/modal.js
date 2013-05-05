@@ -77,14 +77,13 @@
 
 
   $(function(){
-    $(document.body)
-    .keydown(function(e){
+    $(document.body).keydown(function(e){
       if(e.which === Amp.keys.ESCAPE && curmodal) {
         curmodal && curmodal.hide();
         return false;
       }
-    })
-    .delegate('.modal-backdrop', 'click', function(){
+    });
+    backdrop.click(function(){
       curmodal && curmodal.hide();
     });
   });
@@ -94,14 +93,16 @@
   
   Amp.showBackdrop = function(klass){
     if(!backdropShown) {
-      $(document.body).prepend(backdrop);
+      backdropShown = true;
       klass && backdrop.addClass(backdropClass = klass);
+      $(document.body).prepend(backdrop);
     }
   }
   Amp.hideBackdrop = function(){
     if(backdropShown) {
       backdrop.removeClass(backdropClass).detach();
-      className = '';
+      backdropClass = '';
+      backdropShown = false;
     }
   }
   

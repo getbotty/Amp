@@ -536,6 +536,12 @@ The grid control transforms a block element into a grid that will display the da
           name: 'Birthday',
           editable: true,
           sortable: true
+        },{
+          id: 'fav_icecream',
+          type: 'enum',
+          name: 'Favorite Ice cream',
+          editable: true,
+          items:  [{ value: "0", label: "Vanilla" }, { value: "1", label: "Chocolate" }, { value: "2", label: "Strawberry" }]
         }]
       },
       initialize: function(){
@@ -592,6 +598,7 @@ This should normally be a function that returns an object, or just an object. If
 - `content` - *function*; Normally used with `type:composite`, the function will be passed the row model and the result will be rendered in each cell instead of the default property value. It will override the defaut content of other types as well.
 - `alsoChange` - *array*; A list of ids of other columns. When a `change` event is triggered on the row model forcing a redraw of a cell, a redraws will be fired on the same model for these cells as well.
 - `fallback` - *mixed*; If a property's value is falsy, this value (cast to string) will be shown instead.
+- `items` - *array*; This is an array of possible choices. It works only for enum columns. It needs to have the same format `[{ value: "", label: ""}]` like the items array for "List" controls.
 
 ### Editing
 

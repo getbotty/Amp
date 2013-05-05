@@ -4,9 +4,10 @@
  * Used as a standalone list and 
  * a part of the Select and Combo controls.
 **/
-
 ;(function($, Amp){
-    
+  // A guid counter for list items that belong to lists without IDs
+  var GUID = 0;
+   
   /**
    * List control constructor.
    * The list control is used by Select and Combo, but can also be a standalone list.
@@ -14,7 +15,8 @@
   **/
   function List(element, options){
     var value, list;
- 
+    
+    element[0].id || element.attr('id', GUID++);
     options = _.extend({
       standalone: true,    // If true, the list behaves as a control (can be focused, events can be bound, etc...)
       multiple:   false,   // Whether multiple elements can be selected
@@ -220,7 +222,7 @@
       this._focused = element && element.addClass('focused');
       return this;
     },
-
+    
     /** 
      * Focuses on the item with specified index or to the next/previous item.
      * If we focus the next/previous item and nothing is focused, then we use the 
@@ -231,7 +233,7 @@
     **/
     focusItem: function(index) {
       var nf, id = this.element.get(0).id, fo = this.focusElement();
-
+      
       if(index === '+') {
         index = fo ? $(fo.next()) : [];
         if(fo && !index.length) {
@@ -307,6 +309,8 @@
       var self = this;
       var oldValue = this.toJSON();
       
+      this._focused = null;
+      
       function handleValues(items){
         self.items = items;
         self.__set(oldValue, silenceChange);
@@ -361,7 +365,7 @@
      * @return Number Number of rendered items.
      */
     render: function(){
-      var id     = this.element[0].id; 
+      var id     = this.element[0].id;
       var sel    = this.selected;
       var html   = []; 
       var count  = 0;
