@@ -379,7 +379,7 @@
           break;
         case 'enum':
           value = info.items ? _.find(info.items, function(e){ return e.value === value; }) : value;
-          value = !value && 'falsy' in info ? info.falsy : value.label;
+          value = !value && 'falsy' in info ? info.falsy : value && value.label;
           break;
         default: 
           value = value ? value : ('falsy' in info ? info.falsy : value); 

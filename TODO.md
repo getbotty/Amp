@@ -9,3 +9,4 @@
 9. Implement anyValue for Combo, where the combo behaves like a normal text input.
 10. Implement Optgroups/Nested items for all lists.
 11. Make a mobile version.
+12. When a grid editable input is defocused buy clicking elsewhere on the page, it will call __editStart on the next editable field - if the caret was at the end of the defocused field. This should happen only when defocusing by pressing the arrow keys.
