@@ -369,7 +369,7 @@
             ? value === 0
               ? ('falsy' in info ? info.falsy : value.format(info.format || 0))
               : value.format(info.format || 0)
-            : ('falsy' in info ? info.falsy : "");
+            : value;
           break;
         case 'date': 
           value = Date.formatDate(info.format, value); 
