@@ -348,11 +348,16 @@
      * Returns the formatted string representation of the cell data
     **/
     _formatCell: function(item, prop){
-      var info      = this._columns[prop];
-      var value     = _.isFunction(info.content) ? info.content(item) : item.get(prop);
+      var info      = this._columns[prop];    
       var className = info.type || 'text';
       var action    = _.isFunction(info.action) ? info.action(item) : _.isObject(info.action) ? info.action : null;
       var attrs;
+      var value;
+
+      if (info.type == 'enum')
+        value = item.get(prop);
+      else
+        value = _.isFunction(info.content) ? info.content(item) : item.get(prop);
 
       // Custom actions override editable
       if(action && action.icon) {
@@ -377,9 +382,18 @@
         case 'boolean':
           value = value ? 'True' : 'False';
           break;
-        case 'enum':
+       case 'enum':
           value = info.items ? _.find(info.items, function(e){ return e.value === value; }) : value;
-          value = !value && 'falsy' in info ? info.falsy : value && value.label;
+          
+          if (!value && 'falsy' in info)
+            value =  info.falsy;
+          else {
+            if (_.isFunction(info.content))
+              value = info.content(item);
+            else 
+              value = value.value;
+          };
+
           break;
         default: 
           value = value ? value : ('falsy' in info ? info.falsy : value); 
