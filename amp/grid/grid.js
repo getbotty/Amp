@@ -376,7 +376,7 @@
               : value.format(info.format || 0)
             : value;
           break;
-        case 'date': 
+        case 'date':
           value = Date.formatDate(info.format, value); 
           break;
         case 'boolean':
@@ -384,13 +384,13 @@
           break;
        case 'enum':
           value = info.items ? _.find(info.items, function(e){ return e.value === value; }) : value;
-          
+
           if (!value && 'falsy' in info)
             value =  info.falsy;
           else {
             if (_.isFunction(info.content))
               value = info.content(item);
-            else 
+            else
               value = value.value;
           };
 
