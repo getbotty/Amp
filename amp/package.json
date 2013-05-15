@@ -13,8 +13,7 @@
         "extensions":   [ "./extensions" ],
         "barebones":    [ "./extensions", "./core", "./button", "./input", "./list", "./select", "./datepicker", "./modal", "./tooltip" ],
         "grid":         [ "barebones", "./grid" ],
-
-        "classic":      [ "barebones", "./theme-classic" ],
-        "flat":         [ "barebones", "./theme-flat" ]
+        "classic":      [ "barebones", "./theme-classic" ]
+       
     }
 }

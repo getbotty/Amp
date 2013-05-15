@@ -354,7 +354,7 @@
       var attrs;
       var value;
 
-      if (info.type == 'enum')
+      if (info.type == 'enum' || info.type == 'combo')
         value = item.get(prop);
       else
         value = _.isFunction(info.content) ? info.content(item) : item.get(prop);
@@ -382,7 +382,8 @@
         case 'boolean':
           value = value ? 'True' : 'False';
           break;
-       case 'enum':
+        case 'combo':  
+        case 'enum':
           value = info.items ? _.find(info.items, function(e){ return e.value === value; }) : value;
           
           if (!value && 'falsy' in info)
@@ -393,8 +394,7 @@
             else 
               value = value.value;
           };
-
-          break;
+          break;       
         default: 
           value = value ? value : ('falsy' in info ? info.falsy : value); 
           break;
@@ -425,7 +425,7 @@
         parent = $(document.body);
       }
       
-      if(input === inputs.enum) {
+      if(input === inputs.enum || input === inputs.combo ) {
         input.reset(column.items, true, true);
       }
       else {
@@ -582,6 +582,7 @@
     inputs.number = $("<input class='amp-grid-input'>").amp('number', { validator: {}, format: 0 });
     inputs.date   = $("<input class='amp-grid-input'>").amp('date', { validator: {}, format: 'yy-mm-dd' });
     inputs.enum   = $("<div class='amp-grid-input amp-panel'></div>").amp('list', { items: [], multiple: false });
+    inputs.combo  = $("<input class='amp-grid-input'>").amp('combo',{ items: [], multiple: false });
     
     // We would normally just pass direction to the trigger method
     // but there appears to be a bug in jQuery 2.0 that prevents

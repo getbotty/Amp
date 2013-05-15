@@ -175,10 +175,12 @@
                   falsy:      ""
                 },{
                   id:         "more_enums",
-                  type:       "enum",
+                  type:       "combo",
                   name:       "More enums",
-                  items:      [{ value: "yes", label: "Value one" }, { value: "no", label: "Value Two" }, { value: "3", label: "Large Value three. It's long." }],
+                  items:      countries,
                   editable:   true,
+                  content:    function(item){
+                    return "<span style='color:red'>" + item.get("more_enums") + "</span>";},
                   falsy:      ""
                 },{ 
                   id: "disbursement", 
