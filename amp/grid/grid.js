@@ -10,7 +10,7 @@
   var cache  = {};
   var inputs = {};
   var directions = { '38': [0, -1], '40': [0, 1], '9': [1, 0], '37':[-1, 0], '39': [1, 0] };
-
+  
   function makeAttrs(dict){
     if( _.isObject(dict) ) {
       return _.map(dict, function(val, key){ return key + '="' + val + '"'; }).join(" ");
@@ -381,19 +381,10 @@
           break;
         case 'boolean':
           value = value ? 'True' : 'False';
-          break;
-       case 'enum':
-          value = info.items ? _.find(info.items, function(e){ return e.value === value; }) : value;
-
-          if (!value && 'falsy' in info)
-            value =  info.falsy;
-          else {
-            if (_.isFunction(info.content))
-              value = info.content(item);
-            else
-              value = value.value;
-          };
-
+          break;         
+        case 'enum':
+          value = _.isFunction(info.items) ? info.items(item) : info.items ? _.find(info.items, function(e){ return e.value === value; }) : value;
+          value = !value && 'falsy' in info ? info.falsy : _.isFunction(info.content) ? info.content(item) : value.value;           
           break;
         default: 
           value = value ? value : ('falsy' in info ? info.falsy : value); 
@@ -415,7 +406,7 @@
       var p      = td.position();
       var parent = td.offsetParent();
 
-      var input  = inputs[column.type];
+      var input  = inputs[column.widget] ? inputs[column.widget] : inputs[column.type];
       if(!input) {
         return;
       }
@@ -425,8 +416,8 @@
         parent = $(document.body);
       }
       
-      if(input === inputs.enum) {
-        input.reset(column.items, true, true);
+      if((input === inputs.enum) || (input === inputs.combo)) {
+        input.reset(_.isFunction(column.items) ? column.items(item) : column.items , true, true);
       }
       else {
         input.setFormat(column.format);
@@ -582,6 +573,7 @@
     inputs.number = $("<input class='amp-grid-input'>").amp('number', { validator: {}, format: 0 });
     inputs.date   = $("<input class='amp-grid-input'>").amp('date', { validator: {}, format: 'yy-mm-dd' });
     inputs.enum   = $("<div class='amp-grid-input amp-panel'></div>").amp('list', { items: [], multiple: false });
+    inputs.combo  = $("<input class='amp-grid-input'>").amp('combo',{ items: [] });
     
     // We would normally just pass direction to the trigger method
     // but there appears to be a bug in jQuery 2.0 that prevents
@@ -589,65 +581,65 @@
     var direction = false;
 
     _.each(inputs, function(input, type){
-      
-      if(type === 'enum') {
-        
-        input.element.on({
-          blur: function(e){
-            var prop, grid, next, self  = $(this), input = self.amp();
-            if(input.__innerClick) {
-              return;
-            }
-            prop  = input.__prop;
-            grid  = input.__grid;
-            next  = direction && grid._getOffsetField(grid._editedItem, prop, direction);
 
-            // Inform the grid that the editing ended.          
-            grid._editEnd(prop, input);
-            next && grid._editStart(next.cid, next.field);
+      if(type === 'enum' || type ==='combo') {             
+          input.element.on({
+            blur: function(e){
+              var prop, grid, next, self  = $(this), input = self.amp();
+              if(input.__innerClick) {
+                return;
+              }
+              prop  = input.__prop;
+              grid  = input.__grid;
+              next  = direction && grid._getOffsetField(grid._editedItem, prop, direction);
 
-            return direction = false;
-          },
-          keydown: function(e){
-            var fe;
-            
-            if(e.which === Amp.keys.ESCAPE) {
-              $(this).trigger('blur');
-            }
-            else if(e.which === Amp.keys.UP) {
-              if((fe = input.focusElement()) && fe.is(':first-child')) {
-                direction = [0, -1];
+              // Inform the grid that the editing ended.          
+              grid._editEnd(prop, input);
+              next && grid._editStart(next.cid, next.field);
+
+              return direction = false;
+            },
+            keydown: function(e){
+              var fe;
+              
+              if(e.which === Amp.keys.ESCAPE) {
+                $(this).trigger('blur');
+              }
+              else if(e.which === Amp.keys.UP) {
+                fe = (type ==='enum') ? input.focusElement() : input.list.focusElement()
+                if(fe  && fe.is(':first-child')) {
+                  direction = [0, -1];
+                  $(this).trigger('blur');
+                  return false;
+                }
+              }
+              else if(e.which === Amp.keys.DOWN) {
+                fe = (type ==='enum') ? input.focusElement() : input.list.focusElement()
+                if(fe && fe.is(':last-child')) {
+                  direction = [0, 1];
+                  $(this).trigger('blur');
+                  return false;
+                }
+              }
+              else if(e.which === Amp.keys.LEFT) {
+                direction = [-1, 0];
+                $(this).trigger('blur');
+                return false;
+              }
+              else if(e.which === Amp.keys.RIGHT) {
+                direction = [1, 0];
+                $(this).trigger('blur');
+                return false;
+              }
+              else if(e.which === Amp.keys.TAB) {
+                direction = [e.shiftKey ? -1 : 1, 0];
                 $(this).trigger('blur');
                 return false;
               }
             }
-            else if(e.which === Amp.keys.DOWN) {
-              if((fe = input.focusElement()) && fe.is(':last-child')) {
-                direction = [0, 1];
-                $(this).trigger('blur');
-                return false;
-              }
-            }
-            else if(e.which === Amp.keys.LEFT) {
-              direction = [-1, 0];
-              $(this).trigger('blur');
-              return false;
-            }
-            else if(e.which === Amp.keys.RIGHT) {
-              direction = [1, 0];
-              $(this).trigger('blur');
-              return false;
-            }
-            else if(e.which === Amp.keys.TAB) {
-              direction = [e.shiftKey ? -1 : 1, 0];
-              $(this).trigger('blur');
-              return false;
-            }
-          }
-        });
-        return;
-      }
-      
+          });
+          return;   
+      }       
       input.element.on({
         blur: function(e){
           var prop, grid, next, self  = $(this), input = self.amp();

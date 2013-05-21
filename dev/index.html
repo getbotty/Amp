@@ -172,14 +172,17 @@
                   name:       "Enums",
                   items:      [{ value: "yes", label: "Indeed" }, { value: "no", label: "Not Quite So" }],
                   editable:   true,
-                  falsy:      ""
+                  falsy:      ""              
                 },{
-                  id:         "more_enums",
+                  id:         "combo",
                   type:       "enum",
-                  name:       "More enums",
-                  items:      [{ value: "yes", label: "Value one" }, { value: "no", label: "Value Two" }, { value: "3", label: "Large Value three. It's long." }],
+                  name:       "Combo",
+                  items:      countries,                
                   editable:   true,
-                  falsy:      ""
+                  content:    function(item){
+                    return "<span style='color:red'>" + item.get("combo") + "</span>";},
+                  falsy:      "",
+                  widget:     "combo"
                 },{ 
                   id: "disbursement", 
                   type: 'number', 

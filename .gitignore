@@ -2,4 +2,5 @@ dev/node_modules
 
 .svn
 .DS_Store
+node_modules
 
