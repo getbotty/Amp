@@ -383,16 +383,8 @@
           value = value ? 'True' : 'False';
           break;         
         case 'enum':
-          value = info.items ? _.find(info.items, function(e){ return e.value === value; }) : value;
-          
-          if (!value && 'falsy' in info)
-            value =  info.falsy;
-          else {
-            if (_.isFunction(info.content))
-              value = info.content(item);
-            else 
-              value = value.value;
-          };
+          value = _.isFunction(info.items) ? info.items(item) : info.items ? _.find(info.items, function(e){ return e.value === value; }) : value;
+          value = !value && 'falsy' in info ? info.falsy : _.isFunction(info.content) ? info.content(item) : value.value;           
           break;       
         default: 
           value = value ? value : ('falsy' in info ? info.falsy : value); 
@@ -425,7 +417,7 @@
       }
       
       if((input === inputs.enum) || (input === inputs.combo)) {
-        input.reset(column.items, true, true);
+        input.reset(_.isFunction(column.items) ? column.items(item) : column.items , true, true);
       }
       else {
         input.setFormat(column.format);
