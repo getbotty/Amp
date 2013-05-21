@@ -5217,15 +5217,16 @@
       var validator, min, max, self = this;
 
       if(validator = this.options.validator) {
-        if(_.isObject(validator)){
-          validator = _.values(validator);
+        if(_.isFunction(validator)){
+          validator = [validator];
         }
         else if(_.isArray(validator)){
           validator = validator.slice();
         }
-        else {
-          validator = [validator];
+        else if(_.isObject(validator)){
+          values = _.values(validator);
         }
+
         if(_.any(validator, function(v){ return !_.isFunction(v); })){
           throw "Invalid validators passed for " + this.element.attr('id') + ". Must be a function or an array/object of functions.";
         }
@@ -6067,11 +6068,16 @@
      * Returns the formatted string representation of the cell data
     **/
     _formatCell: function(item, prop){
-      var info      = this._columns[prop];
-      var value     = _.isFunction(info.content) ? info.content(item) : item.get(prop);
+      var info      = this._columns[prop];    
       var className = info.type || 'text';
       var action    = _.isFunction(info.action) ? info.action(item) : _.isObject(info.action) ? info.action : null;
       var attrs;
+      var value;
+
+      if (info.type == 'enum')
+        value = item.get(prop);
+      else
+        value = _.isFunction(info.content) ? info.content(item) : item.get(prop);
 
       // Custom actions override editable
       if(action && action.icon) {
@@ -6088,17 +6094,26 @@
             ? value === 0
               ? ('falsy' in info ? info.falsy : value.format(info.format || 0))
               : value.format(info.format || 0)
-            : ('falsy' in info ? info.falsy : "");
+            : value;
           break;
-        case 'date': 
+        case 'date':
           value = Date.formatDate(info.format, value); 
           break;
         case 'boolean':
           value = value ? 'True' : 'False';
           break;
-        case 'enum':
+       case 'enum':
           value = info.items ? _.find(info.items, function(e){ return e.value === value; }) : value;
-          value = !value && 'falsy' in info ? info.falsy : value.label;
+
+          if (!value && 'falsy' in info)
+            value =  info.falsy;
+          else {
+            if (_.isFunction(info.content))
+              value = info.content(item);
+            else
+              value = value.value;
+          };
+
           break;
         default: 
           value = value ? value : ('falsy' in info ? info.falsy : value); 

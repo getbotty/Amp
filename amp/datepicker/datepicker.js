@@ -64,15 +64,16 @@
       var validator, min, max, self = this;
 
       if(validator = this.options.validator) {
-        if(_.isObject(validator)){
-          validator = _.values(validator);
+        if(_.isFunction(validator)){
+          validator = [validator];
         }
         else if(_.isArray(validator)){
           validator = validator.slice();
         }
-        else {
-          validator = [validator];
+        else if(_.isObject(validator)){
+          values = _.values(validator);
         }
+
         if(_.any(validator, function(v){ return !_.isFunction(v); })){
           throw "Invalid validators passed for " + this.element.attr('id') + ". Must be a function or an array/object of functions.";
         }
