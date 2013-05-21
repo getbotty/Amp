@@ -172,16 +172,17 @@
                   name:       "Enums",
                   items:      [{ value: "yes", label: "Indeed" }, { value: "no", label: "Not Quite So" }],
                   editable:   true,
-                  falsy:      ""
+                  falsy:      ""              
                 },{
                   id:         "combo",
-                  type:       "combo",
+                  type:       "enum",
                   name:       "Combo",
-                  items:      countries,
+                  items:      countries,                
                   editable:   true,
                   content:    function(item){
                     return "<span style='color:red'>" + item.get("combo") + "</span>";},
-                  falsy:      ""
+                  falsy:      "",
+                  widget:     "combo"
                 },{ 
                   id: "disbursement", 
                   type: 'number', 

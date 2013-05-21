@@ -541,7 +541,14 @@ The grid control transforms a block element into a grid that will display the da
           type: 'enum',
           name: 'Favorite Ice cream',
           editable: true,
-          items:  [{ value: "0", label: "Vanilla" }, { value: "1", label: "Chocolate" }, { value: "2", label: "Strawberry" }]
+          items:  [{ value: "0", label: "Vanilla" }, { value: "1", label: "Chocolate" }, { value: "2", label: "Strawberry" }]       
+        },{
+          id: 'fav_food',
+          type: 'enum',
+          name: 'Favorite Food',
+          editable: true,
+          items: [{ value: "0", label: "Pizza" }, { value: "1", label: "Hamburger" }, { value: "2", label: "Spaghetti" }],
+          widget:'combo'
         }]
       },
       initialize: function(){
@@ -598,7 +605,8 @@ This should normally be a function that returns an object, or just an object. If
 - `content` - *function*; Normally used with `type:composite`, the function will be passed the row model and the result will be rendered in each cell instead of the default property value. It will override the defaut content of other types as well.
 - `alsoChange` - *array*; A list of ids of other columns. When a `change` event is triggered on the row model forcing a redraw of a cell, a redraws will be fired on the same model for these cells as well.
 - `fallback` - *mixed*; If a property's value is falsy, this value (cast to string) will be shown instead.
-- `items` - *array*; This is an array of possible choices. It works only for enum columns. It needs to have the same format `[{ value: "", label: ""}]` like the items array for "List" controls.
+- `items` - *mixed*; You can pass an array of possible choices or a function returning an array. It works only for enum columns. It needs to have the same format `[{ value: "", label: ""}]` like the items array for "List" controls.
+- `widget` - *string*; It's used with `type:enum`. Can have only one value: `combo`. It will show 'ComboBox' controls with Autocomplete.
 
 ### Editing
 
