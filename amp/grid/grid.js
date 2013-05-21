@@ -611,7 +611,6 @@
           },
           keydown: function(e){
             var fe;
-            
             if(e.which === Amp.keys.ESCAPE) {
               $(this).trigger('blur');
             }
@@ -647,6 +646,7 @@
           }
         });
         return;
+
       }
       
       input.element.on({

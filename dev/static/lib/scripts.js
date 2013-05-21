@@ -6093,7 +6093,7 @@
             ? value === 0
               ? ('falsy' in info ? info.falsy : value.format(info.format || 0))
               : value.format(info.format || 0)
-            : ('falsy' in info ? info.falsy : "");
+            : value;
           break;
         case 'date': 
           value = Date.formatDate(info.format, value); 
@@ -6310,7 +6310,7 @@
 
     _.each(inputs, function(input, type){
       
-      if(type === 'enum') {
+      if(type === 'enum' || type === 'combo') {
         
         input.element.on({
           blur: function(e){
@@ -6366,6 +6366,7 @@
           }
         });
         return;
+
       }
       
       input.element.on({

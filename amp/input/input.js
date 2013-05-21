@@ -7,6 +7,7 @@
 ;(function($, Amp) {
 
   function Input(element, options){
+    element.attr('autocomplete', 'off');
     return Amp.createObject(Input.proto, Amp.controls.control(element, options));
   }
 
