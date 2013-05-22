@@ -384,7 +384,7 @@
           break;         
         case 'enum':
           value = _.isFunction(info.items) ? info.items(item) : info.items ? _.find(info.items, function(e){ return e.value === value; }) : value;
-          value = !value && 'falsy' in info ? info.falsy : _.isFunction(info.content) ? info.content(item) : value.value;           
+          value = !value && 'falsy' in info ? info.falsy : _.isFunction(info.content) ? info.content(item) : value.label;           
           break;
         default: 
           value = value ? value : ('falsy' in info ? info.falsy : value); 
